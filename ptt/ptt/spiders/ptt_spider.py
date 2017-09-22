@@ -1,5 +1,5 @@
 import scrapy
-
+import html2text
 class PTTSpider(scrapy.Spider):
 	name = "ptt"
 
@@ -27,10 +27,13 @@ class PTTSpider(scrapy.Spider):
 			title = article.css("div.title")
 			url = title.css("a::attr(href)").extract_first()
 			url = 'https://www.ptt.cc' + url
-			content = scrapy.Request(url, callback=self.parse_content)
-			print(type(content))
+			yield scrapy.Request(url, callback=self.parse_content)
+			#print(content)
 		#with open("/Users/skye/result.txt","w") as f:
 		#	f.write(str(data))
 	
 	def parse_content(self,response):
-		pass
+		content = response.xpath('//div[@id="main-content"]')
+		converter = html2text.HTML2Text()
+		converter.ignore_links = True
+		print(converter.handle(content.extract()[0]))
