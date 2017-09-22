@@ -1,5 +1,6 @@
 import scrapy
 import html2text
+f = open("/Users/skye/result.txt","w")
 class PTTSpider(scrapy.Spider):
 	name = "ptt"
 
@@ -21,8 +22,11 @@ class PTTSpider(scrapy.Spider):
 			# get author
 			author = meta.css("div.author::text").extract_first()
 
-			print(title,date,author)
+			#print(title,date,author)
 			
+			#f.write(str(date))
+			#f.write(str(title))
+			#f.write(str(author))
 			# get url
 			title = article.css("div.title")
 			url = title.css("a::attr(href)").extract_first()
@@ -30,10 +34,10 @@ class PTTSpider(scrapy.Spider):
 			yield scrapy.Request(url, callback=self.parse_content)
 			#print(content)
 		#with open("/Users/skye/result.txt","w") as f:
-		#	f.write(str(data))
-	
+				
 	def parse_content(self,response):
 		content = response.xpath('//div[@id="main-content"]')
 		converter = html2text.HTML2Text()
 		converter.ignore_links = True
-		print(converter.handle(content.extract()[0]))
+		#print(converter.handle(content.extract()[0]))
+		f.write(converter.handle(content.extract()[0]))
